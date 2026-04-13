@@ -1,0 +1,63 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; ViewData["Nav"] = "dashboard"; }
+
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Welcome back, @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value. Here's today's overview.</p>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-label">Active users</div>
+        <div class="stat-val">@Model.TotalUsers</div>
+        <div class="stat-sub">4 roles configured</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Access points online</div>
+        <div class="stat-val">@Model.OnlinePoints</div>
+        <div class="stat-sub">of 6 total</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Entries today</div>
+        <div class="stat-val">@Model.TodayEntries</div>
+        <div class="stat-sub">granted access</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Denied today</div>
+        <div class="stat-val">@Model.DeniedToday</div>
+        <div class="stat-sub">failed attempts</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">Recent activity</div>
+    @foreach (var log in Model.RecentLogs)
+    {
+        <div class="log-entry">
+            <span class="log-time">@log.EventTime.ToString("HH:mm")</span>
+            <span class="log-icon @(log.Granted ? "log-grant" : "log-deny")">@(log.Granted ? "✓" : "✗")</span>
+            <span><strong>@log.AccessPointName</strong> — @log.CustomerRef — <span class="badge @(log.Granted ? "badge-granted" : "badge-denied")">@(log.Granted ? "Granted" : "Denied")</span></span>
+            <span class="log-note">@log.Note</span>
+        </div>
+    }
+    <div style="margin-top:12px;">
+        <a asp-controller="Home" asp-action="Logs" class="btn btn-sm">View full log</a>
+        @if (User.IsInRole("SystemAdmin") || User.IsInRole("Staff") || User.IsInRole("SecurityOfficer"))
+        {
+            <a asp-controller="Home" asp-action="ExportLogs" class="btn btn-sm" style="margin-left:8px;">Export CSV</a>
+        }
+    </div>
+</div>
+
+@if (User.IsInRole("SystemAdmin"))
+{
+<div class="card">
+    <div class="card-title">Admin quick actions</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a asp-controller="Users" asp-action="Add" class="btn btn-primary btn-sm">+ Add user</a>
+        <a asp-controller="Users" asp-action="Index" class="btn btn-sm">Manage users</a>
+        <a asp-controller="Home" asp-action="ExportLogs" class="btn btn-sm">Export audit log</a>
+        <a asp-controller="Home" asp-action="AccessPoints" class="btn btn-sm">View access points</a>
+    </div>
+</div>
+}

@@ -1,0 +1,35 @@
+@model List<AccessPoint>
+@{ ViewData["Title"] = "Access Points"; ViewData["Nav"] = "access"; }
+
+<div class="page-header">
+    <h1 class="page-title">Access Points</h1>
+    <p class="page-sub">Physical entry and exit points monitored by the system.</p>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Method</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ap in Model)
+            {
+                <tr>
+                    <td><strong>@ap.Name</strong></td>
+                    <td>@ap.Location</td>
+                    <td>@ap.Method</td>
+                    <td>
+                        <span class="badge @(ap.IsOnline ? "badge-active" : "badge-inactive")">
+                            @(ap.IsOnline ? "Online" : "Offline")
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

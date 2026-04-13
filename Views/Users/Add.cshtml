@@ -1,0 +1,64 @@
+@model AddUserViewModel
+@{ ViewData["Title"] = "Add User"; ViewData["Nav"] = "users"; }
+
+<div class="page-header">
+    <h1 class="page-title">Add New User</h1>
+    <p class="page-sub">Create a new system account and assign a role.</p>
+</div>
+
+<div class="card" style="max-width:480px;">
+    <form asp-action="Add" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="FullName">Full name</label>
+            <input asp-for="FullName" class="form-control" placeholder="e.g. Sara Nilsson" />
+            <span asp-validation-for="FullName" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Username">Username</label>
+            <input asp-for="Username" class="form-control" placeholder="e.g. snilsson" autocomplete="off" />
+            <span asp-validation-for="Username" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="Min. 6 characters" autocomplete="new-password" />
+            <span asp-validation-for="Password" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Role">Role</label>
+            <select asp-for="Role" class="form-control">
+                <option value="Viewer">Viewer — read-only access</option>
+                <option value="Staff">Staff — operational access</option>
+                <option value="SecurityOfficer">Security Officer — gate control</option>
+                <option value="SystemAdmin">System Administrator — full access</option>
+            </select>
+        </div>
+
+        <div class="perm-info">
+            <div class="perm-info-title">Role permissions summary</div>
+            <table class="perm-table">
+                <thead>
+                    <tr><th>Permission</th><th>Admin</th><th>Staff</th><th>Security</th><th>Viewer</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>View dashboard &amp; logs</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>Simulate access</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>Reset customer PIN</td><td>✓</td><td>✓</td><td>✓</td><td>–</td></tr>
+                    <tr><td>Lock / unlock gate</td><td>✓</td><td>✓</td><td>✓</td><td>–</td></tr>
+                    <tr><td>Export audit log</td><td>✓</td><td>✓</td><td>✓</td><td>–</td></tr>
+                    <tr><td>Manage users</td><td>✓</td><td>–</td><td>–</td><td>–</td></tr>
+                    <tr><td>Edit permissions</td><td>✓</td><td>–</td><td>–</td><td>–</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:20px;">
+            <button type="submit" class="btn btn-primary">Create user</button>
+            <a asp-action="Index" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>

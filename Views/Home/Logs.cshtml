@@ -1,0 +1,36 @@
+@model List<AccessLog>
+@{ ViewData["Title"] = "Activity Log"; ViewData["Nav"] = "logs"; }
+
+<div class="page-header">
+    <h1 class="page-title">Activity Log</h1>
+    <p class="page-sub">Full audit trail of all access events.</p>
+</div>
+
+<div class="card">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <a asp-action="Logs" asp-route-filter="all"     class="btn btn-sm @(ViewBag.Filter=="all"     ? "btn-primary" : "")">All</a>
+        <a asp-action="Logs" asp-route-filter="granted" class="btn btn-sm @(ViewBag.Filter=="granted" ? "btn-primary" : "")">Granted</a>
+        <a asp-action="Logs" asp-route-filter="denied"  class="btn btn-sm @(ViewBag.Filter=="denied"  ? "btn-primary" : "")">Denied</a>
+        @if (User.IsInRole("SystemAdmin") || User.IsInRole("Staff") || User.IsInRole("SecurityOfficer"))
+        {
+            <a asp-controller="Home" asp-action="ExportLogs" class="btn btn-sm" style="margin-left:auto;">Export CSV</a>
+        }
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr><th>Time</th><th>Access Point</th><th>Customer / User</th><th>Result</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td style="white-space:nowrap;">@log.EventTime.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@log.AccessPointName</td>
+                    <td>@log.CustomerRef</td>
+                    <td><span class="badge @(log.Granted ? "badge-granted" : "badge-denied")">@(log.Granted ? "Granted" : "Denied")</span></td>
+                    <td style="color:var(--text-muted);font-size:13px;">@log.Note</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

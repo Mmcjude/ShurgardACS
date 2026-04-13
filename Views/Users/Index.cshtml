@@ -1,0 +1,63 @@
+@model List<AppUser>
+@{ ViewData["Title"] = "Manage Users"; ViewData["Nav"] = "users"; }
+
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+        <h1 class="page-title">Manage Users</h1>
+        <p class="page-sub">Add, deactivate, or view all system users.</p>
+    </div>
+    <a asp-action="Add" class="btn btn-primary">+ Add user</a>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                var roleBadge = user.Role switch {
+                    "SystemAdmin"     => "badge-admin",
+                    "Staff"           => "badge-staff",
+                    "Viewer"          => "badge-viewer",
+                    "SecurityOfficer" => "badge-security",
+                    _                 => ""
+                };
+                var roleLabel = user.Role switch {
+                    "SystemAdmin"     => "System Admin",
+                    "SecurityOfficer" => "Security Officer",
+                    _                 => user.Role
+                };
+                <tr>
+                    <td><strong>@user.FullName</strong></td>
+                    <td>@user.Username</td>
+                    <td><span class="badge @roleBadge">@roleLabel</span></td>
+                    <td><span class="badge @(user.IsActive ? "badge-active" : "badge-inactive")">@(user.IsActive ? "Active" : "Inactive")</span></td>
+                    <td style="color:var(--text-muted);font-size:13px;">@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @if (user.Role != "SystemAdmin")
+                        {
+                            if (user.IsActive)
+                            {
+                                <form asp-action="Deactivate" asp-route-id="@user.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deactivate @user.FullName?')">Deactivate</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="Activate" asp-route-id="@user.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm">Activate</button>
+                                </form>
+                            }
+                        }
+                        else
+                        {
+                            <span style="font-size:12px;color:var(--text-muted);">Protected</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
