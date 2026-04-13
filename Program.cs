@@ -4,6 +4,9 @@ using ShurgardACS.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -19,9 +22,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly",   policy => policy.RequireRole("SystemAdmin"));
-    options.AddPolicy("StaffAndUp",  policy => policy.RequireRole("SystemAdmin", "Staff", "SecurityOfficer"));
-    options.AddPolicy("AllRoles",    policy => policy.RequireRole("SystemAdmin", "Staff", "SecurityOfficer", "Viewer"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("SystemAdmin"));
+    options.AddPolicy("StaffAndUp", policy => policy.RequireRole("SystemAdmin", "Staff", "SecurityOfficer"));
+    options.AddPolicy("AllRoles", policy => policy.RequireRole("SystemAdmin", "Staff", "SecurityOfficer", "Viewer"));
 });
 
 var app = builder.Build();
@@ -32,13 +35,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Seed the database on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -49,8 +51,5 @@ using (var scope = app.Services.CreateScope())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
-app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
